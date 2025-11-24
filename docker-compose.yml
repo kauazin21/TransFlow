@@ -1,0 +1,66 @@
+version: "3.8"
+
+services:
+
+  api:
+    build: .
+    container_name: transflow_api
+    command: uvicorn src.main:app --host 0.0.0.0 --port 8000
+    volumes:
+      - .:/app
+    env_file: .env
+    ports:
+      - "8000:8000"
+    environment:
+      RABBIT_URL: amqp://guest:guest@rabbitmq:5672/
+    depends_on:
+      rabbitmq:
+        condition: service_healthy
+      mongo:
+        condition: service_started
+      redis:
+        condition: service_started
+
+  mongo:
+    image: mongo
+    container_name: transflow_mongo
+    restart: always
+    ports:
+      - "27017:27017"
+
+  rabbitmq:
+    image: rabbitmq:3-management
+    container_name: transflow_rabbit
+    ports:
+      - "5672:5672"
+      - "15672:15672"
+    environment:
+      RABBITMQ_DEFAULT_USER: guest
+      RABBITMQ_DEFAULT_PASS: guest
+    healthcheck:
+      test: ["CMD", "rabbitmqctl", "status"]
+      interval: 5s
+      timeout: 5s
+      retries: 20
+
+  redis:
+    image: redis:alpine
+    container_name: transflow_redis
+    ports:
+      - "6379:6379"
+
+  consumer:
+    build: .
+    container_name: transflow_consumer
+    command: python src/consumer.py
+    environment:
+      RABBIT_URL: amqp://guest:guest@rabbitmq:5672/
+    depends_on:
+      rabbitmq:
+        condition: service_healthy
+      mongo:
+        condition: service_started
+      redis:
+        condition: service_started
+    volumes:
+      - .:/app
