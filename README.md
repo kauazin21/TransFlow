@@ -110,7 +110,7 @@ Filtra corridas por forma de pagamento.
 
 
 ```md
-![TransFlow rodando](./screenshot_transflow.png)
+![TransFlow rodando](./assets/screenshot_transflow.png)
 ```
 
 ---
