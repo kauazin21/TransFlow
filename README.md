@@ -109,9 +109,7 @@ Filtra corridas por forma de pagamento.
 ## 📸 **4. Captura de Tela do Sistema em Execução**
 
 
-```md
 ![TransFlow rodando](assets/screenshot_transflow.png)
-```
 
 ---
 
